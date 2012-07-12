@@ -5,6 +5,17 @@
             media-type="text/html"
             doctype-public="-//W3C//DTD HTML 4.0//EN"/>
 
+<xsl:template match="contact">
+<xsl:apply-templates />
+<a>
+<xsl:attribute name="href">
+<xsl:text>https://www.google.com/contacts/#contact/</xsl:text>
+<xsl:value-of select="substring-after(@id,'/base/')" />
+</xsl:attribute>
+link
+</a>
+</xsl:template>
+
 
 <xsl:template match="fn"><h2><xsl:value-of select="." /></h2></xsl:template>
 
