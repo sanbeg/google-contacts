@@ -82,10 +82,7 @@ class ContactsToXML
 	public Element node(String name, 
 			    com.google.gdata.data.ValueConstruct data)
 	{
-	    Element elem = document_.createElement(name);
-	    elem.appendChild(document_.createTextNode(data.getValue()));
-	    parent_.appendChild(elem);
-	    return elem;
+	    return node(name,data.getValue());
 	}
 
 	public Element node(String name, String text)
