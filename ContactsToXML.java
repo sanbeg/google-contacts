@@ -118,7 +118,7 @@ class ContactsToXML
     
     }
 
-    public static void printAllContacts(ContactsService myService, Document doc)
+    public static Document printAllContacts(ContactsService myService, Document doc)
 	throws ServiceException, IOException {
 	// Request the feed
 	URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full");
@@ -130,6 +130,10 @@ class ContactsToXML
 	Element rootElement = doc.createElement("contacts");
 	doc.appendChild(rootElement);
 	rootElement.setAttribute("title", resultFeed.getTitle().getPlainText());
+	rootElement.setAttribute("id", resultFeed.getId());
+	//should call setTzShift to get local time
+	//rootElement.setAttribute("updated", resultFeed.getUpdated().toUiString());
+	rootElement.setAttribute("updated", resultFeed.getUpdated().toStringRfc822());
 
 
 	for (ContactEntry entry : resultFeed.getEntries()) {
@@ -165,41 +169,57 @@ class ContactsToXML
 		continue;
 	    }
 	    
-	    for (PhoneNumber phone : entry.getPhoneNumbers()){
-		
-		Element phoneElem = doc.createElement("phone");
-		contactElement.appendChild(phoneElem);
-		
-		phoneElem.appendChild(doc.createTextNode(phone.getPhoneNumber()));
-		
-		if (phone.getRel() != null) {
-		    phoneElem.setAttribute("rel", phone.getRel());
-		}
-		if (phone.getLabel() != null) {
-		    phoneElem.setAttribute("label", phone.getLabel());
-		}
-		if (phone.getPrimary()) {
-		    phoneElem.setAttribute("primary", "yes");
+	    if (entry.hasPhoneNumbers()) {
+
+		Element se = doc.createElement("section");
+		se.setAttribute("tag", "phone");
+		contactElement.appendChild(se);
+
+
+		for (PhoneNumber phone : entry.getPhoneNumbers()){
+		    Element phoneElem = doc.createElement("phone");
+		    se.appendChild(phoneElem);
+		    
+		    phoneElem.appendChild(doc.createTextNode(phone.getPhoneNumber()));
+
+		    
+		    if (phone.getRel() != null) {
+			phoneElem.setAttribute("rel", phone.getRel());
+		    }
+		    if (phone.getLabel() != null) {
+			phoneElem.setAttribute("label", phone.getLabel());
+		    }
+		    if (phone.getPrimary()) {
+			phoneElem.setAttribute("primary", "yes");
+		    }
 		}
 	    }
 	    
-	    for (Email email : entry.getEmailAddresses()) {
+	    
+	    if (entry.hasEmailAddresses()) {
 
-		Element emailElem = doc.createElement("email");
-		contactElement.appendChild(emailElem);
-		
-		emailElem.appendChild(doc.createTextNode(email.getAddress()));
-		
-		if (email.getRel() != null) {
-		    emailElem.setAttribute("rel", email.getRel());
-		}
-		if (email.getLabel() != null) {
-		    emailElem.setAttribute("label", email.getLabel());
-		}
-		if (email.getPrimary()) {
-		    emailElem.setAttribute("primary", "yes");
+		Element se = doc.createElement("section");
+		se.setAttribute("tag", "email");
+		contactElement.appendChild(se);
+
+		for (Email email : entry.getEmailAddresses()) {
+		    Element emailElem = doc.createElement("email");
+		    se.appendChild(emailElem);
+		    
+		    emailElem.appendChild(doc.createTextNode(email.getAddress()));
+		    
+		    if (email.getRel() != null) {
+			emailElem.setAttribute("rel", email.getRel());
+		    }
+		    if (email.getLabel() != null) {
+			emailElem.setAttribute("label", email.getLabel());
+		    }
+		    if (email.getPrimary()) {
+			emailElem.setAttribute("primary", "yes");
+		    }
 		}
 	    }
+	    
 
 
 	    for (PostalAddress pa : entry.getPostalAddresses() ) {
@@ -271,6 +291,11 @@ class ContactsToXML
 	    }
 	    */
 
+	    if (entry.hasBirthday())
+		new TextContainer(doc,contactElement).
+		    node("birthday", entry.getBirthday().getWhen());
+	    
+
 	    for (GroupMembershipInfo group : entry.getGroupMembershipInfos()) {
 
 		Element groupElem = doc.createElement("group");
@@ -300,7 +325,9 @@ class ContactsToXML
 		
 	    }
 	}
+	return doc;
     }
+    
 
 
     
