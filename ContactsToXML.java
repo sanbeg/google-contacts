@@ -60,7 +60,7 @@ class ContactsToXML
 	DOMSource source = new DOMSource(doc);
 	StreamResult result;
 	
-	if (file != "")
+	if (file != null && file != "")
 	     result = new StreamResult(new File(file));
 	else
 	    // Output to console for testing
@@ -70,6 +70,35 @@ class ContactsToXML
     }
     
 
+    private static class TextContainer
+    {
+	private Document document_;
+	private Element parent_;
+	public TextContainer(Document doc, Element elem) 
+	{
+	    document_=doc;
+	    parent_=elem;
+	}
+	public Element node(String name, 
+			    com.google.gdata.data.ValueConstruct data)
+	{
+	    Element elem = document_.createElement(name);
+	    elem.appendChild(document_.createTextNode(data.getValue()));
+	    parent_.appendChild(elem);
+	    return elem;
+	}
+
+	public Element node(String name, String text)
+	{
+	    Element elem = document_.createElement(name);
+	    elem.appendChild(document_.createTextNode(text));
+	    parent_.appendChild(elem);
+	    return elem;
+	}
+
+    }
+    
+	    
     public static void main(String[] args) {
 
 	ContactsService myService = new ContactsService("x");
@@ -118,43 +147,23 @@ class ContactsToXML
 	    if (entry.hasName()) {
 		Name name = entry.getName();
 		if (name.hasFullName()) {
-		    String fullNameToDisplay = name.getFullName().getValue();
-		    Element nameElem = doc.createElement("fn");
-		    nameElem.appendChild(doc.createTextNode(name.getFullName().getValue()));
-		    contactElement.appendChild(nameElem);
-		    
+		    new TextContainer(doc,contactElement).
+			node("fn",name.getFullName().getValue());
 		}
 
 		Element nameElem = doc.createElement("name");
-		
+		TextContainer text=new TextContainer(doc,nameElem);
 
-		if (name.hasNamePrefix()) {
-		    Element elem = doc.createElement("prefix");
-		    elem.appendChild(doc.createTextNode(name.getNamePrefix().getValue()));
-		    nameElem.appendChild(elem);
-		}
-		if (name.hasGivenName()) {
-		    Element elem = doc.createElement("given");
-		    elem.appendChild(doc.createTextNode(name.getGivenName().getValue()));
-		    nameElem.appendChild(elem);
-		}
-		if (name.hasAdditionalName()) {
-		    Element elem = doc.createElement("additional");
-		    elem.appendChild(doc.createTextNode(name.getAdditionalName().getValue()));
-		    nameElem.appendChild(elem);
-		}
-
-		if (name.hasFamilyName()) {
-		    Element elem = doc.createElement("family");
-		    elem.appendChild(doc.createTextNode(name.getFamilyName().getValue()));
-		    nameElem.appendChild(elem);
-		}
-		if (name.hasNameSuffix()) {
-		    Element elem = doc.createElement("suffix");
-		    elem.appendChild(doc.createTextNode(name.getNameSuffix().getValue()));
-		    nameElem.appendChild(elem);
-		}
-		
+		if (name.hasNamePrefix())
+		    text.node("prefix",name.getNamePrefix().getValue());
+		if (name.hasGivenName())
+		    text.node("given", name.getGivenName().getValue());
+		if (name.hasAdditionalName()) 
+		    text.node("additional",name.getAdditionalName().getValue());
+		if (name.hasFamilyName())
+		    text.node("family",name.getFamilyName().getValue());
+		if (name.hasNameSuffix())
+		    text.node("suffix",name.getNameSuffix().getValue());
 		contactElement.appendChild(nameElem);
 	    } else {
 		continue;
@@ -216,10 +225,25 @@ class ContactsToXML
 	    for (StructuredPostalAddress pa : entry.getStructuredPostalAddresses() ) {
 		Element paElem = doc.createElement("address");
 		contactElement.appendChild(paElem);
-		// should keep structure
-		// https://developers.google.com/gdata/javadoc/com/google/gdata/data/extensions/StructuredPostalAddress
-		paElem.appendChild(doc.createTextNode(pa.getFormattedAddress().toString()));
+		TextContainer text = new TextContainer(doc,paElem);
 		
+		if (pa.hasStreet())
+		    text.node("street", pa.getStreet());
+		if (pa.hasPobox())
+		    text.node("pobox", pa.getPobox());
+		if (pa.hasNeighborhood())
+		    text.node("neighborhood", pa.getNeighborhood());
+		if (pa.hasCity())
+		    text.node("city", pa.getCity());
+		if (pa.hasRegion())
+		    text.node("state",pa.getRegion());
+		if (pa.hasPostcode())
+		    text.node("zip",pa.getPostcode());
+		if (pa.hasCountry())
+		    text.node("country", pa.getCountry().getValue());
+		
+
+
 		if (pa.getRel() != null) {
 		    paElem.setAttribute("rel", pa.getRel());
 		}
