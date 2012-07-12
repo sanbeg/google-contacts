@@ -92,7 +92,6 @@ class ContactsToXML
 	    parent_.appendChild(elem);
 	    return elem;
 	}
-
     }
     
 	    
@@ -252,11 +251,6 @@ class ContactsToXML
 		}
 	    }
 
-	    /*
-	    if ( entry.hasStructuredPostalAddresses() ) {
-		System.err.println("found address");
-	    }
-	    */
 	    /*
 	    System.out.println("IM addresses:");
 	    for (Im im : entry.getImAddresses()) {
