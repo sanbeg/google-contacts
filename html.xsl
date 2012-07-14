@@ -48,7 +48,10 @@ link
 </xsl:template>
 
 <xsl:template match="photo">
-<img><xsl:attribute name="src"><xsl:value-of select="@href"/></xsl:attribute></img>
+<img style="float:right">
+<xsl:attribute name="src">
+<xsl:value-of select="substring-after(../@id,'/base/')" /><xsl:text>.jpg</xsl:text>
+</xsl:attribute></img>
 </xsl:template>
 
 </xsl:stylesheet>

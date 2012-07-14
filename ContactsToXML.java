@@ -27,9 +27,12 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+//For config
 import java.util.Properties;
 import java.io.FileInputStream;
 
+//to download image
+import java.io.*;
 
 class ContactsToXML
 {
@@ -69,6 +72,43 @@ class ContactsToXML
 	transformer.transform(source, result);
     }
     
+
+    public static boolean downloadPhoto(ContactsService service, Link photoLink)
+    //throws ServiceException, IOException {
+    {
+	
+	String url = photoLink.getHref();
+	String image=url.substring( url.lastIndexOf('/')+1  ) + ".jpg";
+
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	byte[] buffer = new byte[4096];
+	
+	try {
+	    InputStream in = service.getStreamFromLink(photoLink);
+	    RandomAccessFile file = new RandomAccessFile(image, "rw");
+	    try {
+		for (;;) {
+		    int n = in.read(buffer);
+		    if (n < 0) break;
+		    file.write(buffer, 0, n);
+		}
+		
+		file.close();
+	    }
+	    catch (Exception e) {
+		System.err.println( e.getMessage() );
+		new File(image).delete();
+		return false;
+	    }
+	}
+	catch (Exception e) {
+	    System.err.println( e.getMessage() );
+	    return false;
+	}
+	
+	    
+	return true;
+    }
 
     private static class TextContainer
     {
@@ -177,21 +217,15 @@ class ContactsToXML
 
 
 		for (PhoneNumber phone : entry.getPhoneNumbers()){
-		    Element phoneElem = doc.createElement("phone");
-		    se.appendChild(phoneElem);
+		    Element phoneElem=new TextContainer(doc,se).
+			node("phone",phone.getPhoneNumber());
 		    
-		    phoneElem.appendChild(doc.createTextNode(phone.getPhoneNumber()));
-
-		    
-		    if (phone.getRel() != null) {
+		    if (phone.getRel() != null)
 			phoneElem.setAttribute("rel", phone.getRel());
-		    }
-		    if (phone.getLabel() != null) {
+		    if (phone.getLabel() != null)
 			phoneElem.setAttribute("label", phone.getLabel());
-		    }
-		    if (phone.getPrimary()) {
+		    if (phone.getPrimary())
 			phoneElem.setAttribute("primary", "yes");
-		    }
 		}
 	    }
 	    
@@ -271,25 +305,29 @@ class ContactsToXML
 		}
 	    }
 
-	    /*
-	    System.out.println("IM addresses:");
-	    for (Im im : entry.getImAddresses()) {
-		System.out.print(" " + im.getAddress());
-		if (im.getLabel() != null) {
-		    System.out.print(" label:" + im.getLabel());
+	    if (entry.hasImAddresses()) {
+
+		Element se = doc.createElement("section");
+		se.setAttribute("tag", "im");
+		contactElement.appendChild(se);
+
+		for (Im im : entry.getImAddresses()) {
+		    Element imElem = doc.createElement("im");
+		    se.appendChild(imElem);
+		    
+		    imElem.appendChild(doc.createTextNode(im.getAddress()));
+		    
+		    if (im.getProtocol() != null)
+			imElem.setAttribute("protocol", im.getProtocol());
+		    if (im.getRel() != null)
+			imElem.setAttribute("rel", im.getRel());
+		    if (im.getLabel() != null)
+			imElem.setAttribute("label", im.getLabel());
+		    if (im.getPrimary())
+			imElem.setAttribute("primary", "yes");
 		}
-		if (im.getRel() != null) {
-		    System.out.print(" rel:" + im.getRel());
-		}
-		if (im.getProtocol() != null) {
-		    System.out.print(" protocol:" + im.getProtocol());
-		}
-		if (im.getPrimary()) {
-		    System.out.print(" (primary) ");
-		}
-		System.out.print("\n");
 	    }
-	    */
+
 
 	    if (entry.hasBirthday())
 		new TextContainer(doc,contactElement).
@@ -302,18 +340,18 @@ class ContactsToXML
 		contactElement.appendChild(groupElem);
 		groupElem.setAttribute("href", group.getHref());
 	    }
-	    /*
-	    System.out.println("Extended Properties:");
 	    for (ExtendedProperty property : entry.getExtendedProperties()) {
-		if (property.getValue() != null) {
-		    System.out.println("  " + property.getName() + "(value) = " +
-				       property.getValue());
-		} else if (property.getXmlBlob() != null) {
-		    System.out.println("  " + property.getName() + "(xmlBlob)= " +
-				       property.getXmlBlob().getBlob());
-		}
+		if (property.getValue() != null)
+		    new TextContainer(doc,contactElement).
+			node("extended-property", property.getValue()).
+			setAttribute("name", property.getName());
+		/*
+		  else if (property.getXmlBlob() != null) {
+		  System.out.println("  " + property.getName() + "(xmlBlob)= " +
+		  property.getXmlBlob().getBlob());
+		  }
+		*/
 	    }
-	    */
 	    Link photoLink = entry.getContactPhotoLink();
 	    String photoLinkHref = photoLink.getHref();
 	    //System.out.println("Photo Link: " + photoLinkHref);
@@ -322,6 +360,8 @@ class ContactsToXML
 		Element photoElem = doc.createElement("photo");
 		contactElement.appendChild(photoElem);
 		photoElem.setAttribute("href", photoLink.getHref());
+		
+		downloadPhoto(myService,photoLink);
 		
 	    }
 	}
