@@ -272,6 +272,7 @@ class ContactsToXML
 		    paElem.setAttribute("primary", "yes");
 		}
 	    }
+
 	    for (StructuredPostalAddress pa : entry.getStructuredPostalAddresses() ) {
 		Element paElem = doc.createElement("address");
 		contactElement.appendChild(paElem);
@@ -292,17 +293,12 @@ class ContactsToXML
 		if (pa.hasCountry())
 		    text.node("country", pa.getCountry().getValue());
 		
-
-
-		if (pa.getRel() != null) {
+		if (pa.getRel() != null)
 		    paElem.setAttribute("rel", pa.getRel());
-		}
-		if (pa.getLabel() != null) {
+		if (pa.getLabel() != null)
 		    paElem.setAttribute("label", pa.getLabel());
-		}
-		if (pa.getPrimary()) {
+		if (pa.getPrimary())
 		    paElem.setAttribute("primary", "yes");
-		}
 	    }
 
 	    if (entry.hasImAddresses()) {
@@ -328,6 +324,26 @@ class ContactsToXML
 		}
 	    }
 
+	    if (entry.hasWebsites()) {
+
+		Element se = doc.createElement("section");
+		se.setAttribute("tag", "website");
+		contactElement.appendChild(se);
+
+		for (Website im : entry.getWebsites()) {
+		    Element imElem = doc.createElement("website");
+		    se.appendChild(imElem);
+		    
+		    if (im.hasHref())
+			imElem.setAttribute("href",im.getHref());
+		    if (im.getRel() != null)
+			imElem.setAttribute("rel", im.getRel().toValue());
+		    if (im.getLabel() != null)
+			imElem.setAttribute("label", im.getLabel());
+		    if (im.getPrimary())
+			imElem.setAttribute("primary", "yes");
+		}
+	    }
 
 	    if (entry.hasBirthday())
 		new TextContainer(doc,contactElement).
