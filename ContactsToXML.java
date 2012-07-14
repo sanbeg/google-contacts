@@ -73,15 +73,20 @@ class ContactsToXML
     }
     
 
-    public static boolean downloadPhoto(ContactsService service, Link photoLink)
+    public static boolean downloadPhoto(ContactsService service, 
+					Link photoLink, 
+					Properties conf)
     //throws ServiceException, IOException {
     {
-	
+	String prefix = conf.getProperty("photo-prefix");
 	String url = photoLink.getHref();
-	String image=url.substring( url.lastIndexOf('/')+1  ) + ".jpg";
-
+	String image=prefix + url.substring( url.lastIndexOf('/')+1  ) + ".jpg";
+	
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	byte[] buffer = new byte[4096];
+
+	if ( (conf.getProperty("photo-replace")!="yes") && new File(image).exists())
+	    return true;
 	
 	try {
 	    InputStream in = service.getStreamFromLink(photoLink);
@@ -96,13 +101,13 @@ class ContactsToXML
 		file.close();
 	    }
 	    catch (Exception e) {
-		System.err.println( e.getMessage() );
+		System.err.println( "Image download failed: " + e.getMessage() );
 		new File(image).delete();
 		return false;
 	    }
 	}
 	catch (Exception e) {
-	    System.err.println( e.getMessage() );
+	    System.err.println( "Image download failed: " + e.getMessage() );
 	    return false;
 	}
 	
@@ -149,11 +154,11 @@ class ContactsToXML
 
 	    myService.setUserCredentials(conf.getProperty("gmail"), conf.getProperty("pass"));
 	    Element root=doc.createElement("contactlist");
-	    root.appendChild(printAllContacts(myService, doc));
+	    root.appendChild(printAllContacts(myService, doc, conf));
 	    root.appendChild(printAllGroups(myService, doc));
 	    doc.appendChild(root);
 	    
-	    writeDoc(doc,"");
+	    writeDoc(doc,args[0]);
 	}
 	catch (Exception e) {
 	    System.err.println( e.getMessage() );
@@ -161,13 +166,15 @@ class ContactsToXML
     
     }
 
-    public static Element printAllContacts(ContactsService myService, Document doc)
+    public static Element printAllContacts(ContactsService myService, Document doc, Properties conf)
 	throws ServiceException, IOException {
 	// Request the feed
 	URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full");
 
 	Query myQuery = new Query(feedUrl);
-	myQuery.setMaxResults(1000);
+	if (conf.getProperty("max-results") != null)
+	    myQuery.setMaxResults(Integer.parseInt(conf.getProperty("max-results")));
+
 	ContactFeed resultFeed = myService.query(myQuery, ContactFeed.class);
 
 	Element rootElement = doc.createElement("contacts");
@@ -208,7 +215,7 @@ class ContactsToXML
 		    text.node("suffix",name.getNameSuffix().getValue());
 		contactElement.appendChild(nameElem);
 	    } else {
-		continue;
+		//continue;
 	    }
 	    
 	    if (entry.hasPhoneNumbers()) {
@@ -378,8 +385,8 @@ class ContactsToXML
 		Element photoElem = doc.createElement("photo");
 		contactElement.appendChild(photoElem);
 		photoElem.setAttribute("href", photoLink.getHref());
-		
-		downloadPhoto(myService,photoLink);
+		if (conf.getProperty("photo-download") == "yes")
+		    downloadPhoto(myService,photoLink, conf);
 		
 	    }
 	}
