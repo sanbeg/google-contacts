@@ -1,16 +1,17 @@
-import com.google.gdata.client.*;
-import com.google.gdata.client.contacts.*;
-import com.google.gdata.data.*;
+import com.google.gdata.client.Query;
+import com.google.gdata.client.contacts.ContactsService;
+import com.google.gdata.data.contacts.ContactFeed;
+import com.google.gdata.data.contacts.ContactEntry;
+import com.google.gdata.data.Link;
+
 import com.google.gdata.data.contacts.*;
 import com.google.gdata.data.extensions.*;
-import com.google.gdata.util.*;
+
+import com.google.gdata.util.ServiceException;
 import java.io.IOException;
 import java.net.URL;
 
-import com.google.gdata.data.contacts.ContactFeed;
-import com.google.gdata.data.contacts.ContactEntry;
-
-
+import com.google.gdata.client.Service.GDataRequest;
 
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
@@ -32,7 +33,8 @@ import java.util.Properties;
 import java.io.FileInputStream;
 
 //to download image
-import java.io.*;
+import java.io.InputStream;
+import java.io.FileOutputStream;
 
 class ContactsToXML
 {
@@ -82,35 +84,39 @@ class ContactsToXML
 	String url = photoLink.getHref();
 	String image=prefix + url.substring( url.lastIndexOf('/')+1  ) + ".jpg";
 	
-	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	byte[] buffer = new byte[4096];
 
 	if ( (conf.getProperty("photo-replace")!="yes") && new File(image).exists())
 	    return true;
 	
 	try {
-	    InputStream in = service.getStreamFromLink(photoLink);
-	    RandomAccessFile file = new RandomAccessFile(image, "rw");
+	    GDataRequest request = service.createLinkQueryRequest(photoLink);
 	    try {
-		for (;;) {
-		    int n = in.read(buffer);
-		    if (n < 0) break;
-		    file.write(buffer, 0, n);
+		InputStream in = request.getResponseStream();
+		//InputStream in = service.getStreamFromLink(photoLink);
+		FileOutputStream file = new FileOutputStream(image);
+		try {
+		    for (;;) {
+			int n = in.read(buffer);
+			if (n < 0) break;
+			file.write(buffer, 0, n);
+		    }
+		    
+		    file.close();
 		}
-		
-		file.close();
+		catch (Exception e) {
+		    new File(image).delete();
+		    throw(e);
+		}
 	    }
-	    catch (Exception e) {
-		System.err.println( "Image download failed: " + e.getMessage() );
-		new File(image).delete();
-		return false;
+	    finally {
+		request.end();
 	    }
 	}
 	catch (Exception e) {
 	    System.err.println( "Image download failed: " + e.getMessage() );
 	    return false;
 	}
-	
 	    
 	return true;
     }
