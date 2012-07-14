@@ -3,6 +3,7 @@ import com.google.gdata.client.contacts.ContactsService;
 import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.ValueConstruct;
 
 import com.google.gdata.data.contacts.*;
 import com.google.gdata.data.extensions.*;
@@ -10,8 +11,6 @@ import com.google.gdata.data.extensions.*;
 import com.google.gdata.util.ServiceException;
 import java.io.IOException;
 import java.net.URL;
-
-import com.google.gdata.client.Service.GDataRequest;
 
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
@@ -33,8 +32,7 @@ import java.util.Properties;
 import java.io.FileInputStream;
 
 //to download image
-import java.io.InputStream;
-import java.io.FileOutputStream;
+import my.PhotoDownloader;
 
 class ContactsToXML
 {
@@ -75,52 +73,6 @@ class ContactsToXML
     }
     
 
-    public static boolean downloadPhoto(ContactsService service, 
-					Link photoLink, 
-					Properties conf)
-    //throws ServiceException, IOException {
-    {
-	String prefix = conf.getProperty("photo-prefix");
-	String url = photoLink.getHref();
-	String image=prefix + url.substring( url.lastIndexOf('/')+1  ) + ".jpg";
-	
-	byte[] buffer = new byte[4096];
-
-	if ( (conf.getProperty("photo-replace")!="yes") && new File(image).exists())
-	    return true;
-	
-	try {
-	    GDataRequest request = service.createLinkQueryRequest(photoLink);
-	    try {
-		InputStream in = request.getResponseStream();
-		//InputStream in = service.getStreamFromLink(photoLink);
-		FileOutputStream file = new FileOutputStream(image);
-		try {
-		    for (;;) {
-			int n = in.read(buffer);
-			if (n < 0) break;
-			file.write(buffer, 0, n);
-		    }
-		    
-		    file.close();
-		}
-		catch (Exception e) {
-		    new File(image).delete();
-		    throw(e);
-		}
-	    }
-	    finally {
-		request.end();
-	    }
-	}
-	catch (Exception e) {
-	    System.err.println( "Image download failed: " + e.getMessage() );
-	    return false;
-	}
-	    
-	return true;
-    }
-
     private static class TextContainer
     {
 	private Document document_;
@@ -130,8 +82,7 @@ class ContactsToXML
 	    document_=doc;
 	    parent_=elem;
 	}
-	public Element node(String name, 
-			    com.google.gdata.data.ValueConstruct data)
+	public Element node(String name, ValueConstruct data)
 	{
 	    return node(name,data.getValue());
 	}
@@ -177,6 +128,14 @@ class ContactsToXML
 	// Request the feed
 	URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full");
 
+	PhotoDownloader photo_download=null;
+	System.err.println(conf.getProperty("photo-download"));
+	
+	if ("yes".equals(conf.getProperty("photo-download"))){
+	    photo_download = new PhotoDownloader(myService,conf);
+	    System.err.println("downloading photos");
+	}
+	
 	Query myQuery = new Query(feedUrl);
 	if (conf.getProperty("max-results") != null)
 	    myQuery.setMaxResults(Integer.parseInt(conf.getProperty("max-results")));
@@ -391,8 +350,8 @@ class ContactsToXML
 		Element photoElem = doc.createElement("photo");
 		contactElement.appendChild(photoElem);
 		photoElem.setAttribute("href", photoLink.getHref());
-		if (conf.getProperty("photo-download") == "yes")
-		    downloadPhoto(myService,photoLink, conf);
+		if (photo_download != null)
+		    photo_download.download(photoLink);
 		
 	    }
 	}
