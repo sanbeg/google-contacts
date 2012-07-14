@@ -148,8 +148,11 @@ class ContactsToXML
 	    Document doc = docBuilder.newDocument();
 
 	    myService.setUserCredentials(conf.getProperty("gmail"), conf.getProperty("pass"));
-	    printAllContacts(myService, doc);
-
+	    Element root=doc.createElement("contactlist");
+	    root.appendChild(printAllContacts(myService, doc));
+	    root.appendChild(printAllGroups(myService, doc));
+	    doc.appendChild(root);
+	    
 	    writeDoc(doc,"");
 	}
 	catch (Exception e) {
@@ -158,7 +161,7 @@ class ContactsToXML
     
     }
 
-    public static Document printAllContacts(ContactsService myService, Document doc)
+    public static Element printAllContacts(ContactsService myService, Document doc)
 	throws ServiceException, IOException {
 	// Request the feed
 	URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full");
@@ -168,7 +171,6 @@ class ContactsToXML
 	ContactFeed resultFeed = myService.query(myQuery, ContactFeed.class);
 
 	Element rootElement = doc.createElement("contacts");
-	doc.appendChild(rootElement);
 	rootElement.setAttribute("title", resultFeed.getTitle().getPlainText());
 	rootElement.setAttribute("id", resultFeed.getId());
 	//should call setTzShift to get local time
@@ -381,10 +383,44 @@ class ContactsToXML
 		
 	    }
 	}
-	return doc;
+	return rootElement;
     }
     
 
+    public static Element printAllGroups(ContactsService myService, Document doc)
+	throws ServiceException, IOException {
+	// Request the feed
+	URL feedUrl = new URL("https://www.google.com/m8/feeds/groups/default/full");
+	ContactGroupFeed resultFeed = myService.getFeed(feedUrl, ContactGroupFeed.class);
+	Element rootElement = doc.createElement("groups");
 
+	for (ContactGroupEntry groupEntry : resultFeed.getEntries()) {
+	    Element groupElement = doc.createElement("group");
+	    rootElement.appendChild(groupElement);
+	    
+	    groupElement.setAttribute("id", groupEntry.getId());
+	    groupElement.setAttribute("name",groupEntry.getTitle().getPlainText());
+	    groupElement.setAttribute("updated",groupEntry.getUpdated().toStringRfc822());
+	    
+	    for (ExtendedProperty property : groupEntry.getExtendedProperties()) {
+		if (property.getValue() != null)
+		    new TextContainer(doc,groupElement).
+			node("extended-property", property.getValue()).
+			setAttribute("name", property.getName());
+	    }
+
+	    groupElement.setAttribute("self",groupEntry.getSelfLink().getHref());
+	    
+	    if (!groupEntry.hasSystemGroup()) {
+		// System groups do not have an edit link
+		groupElement.setAttribute("edit",groupEntry.getEditLink().getHref());
+		groupElement.setAttribute("etag",groupEntry.getEtag());
+	    }
+	    if (groupEntry.hasSystemGroup()) {
+		groupElement.setAttribute("system",groupEntry.getSystemGroup().getId());
+	    }
+	}
+	return rootElement;
+    }
     
 }
