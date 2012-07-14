@@ -39,7 +39,6 @@ class ContactsToXML
    
     public static Properties get_properties(String filename) 
     {
-	
 	Properties props = new Properties();
 	try {
 	    FileInputStream propfile = new FileInputStream(filename);
@@ -51,7 +50,6 @@ class ContactsToXML
 	    System.exit(1);
 	}
 	return props;
-	
     }
  
     public static void writeDoc(Document doc, String file) 
@@ -63,15 +61,14 @@ class ContactsToXML
 	DOMSource source = new DOMSource(doc);
 	StreamResult result;
 	
-	if (file != null && file != "")
+	if (file != null && ! "".equals(file))
 	     result = new StreamResult(new File(file));
 	else
-	    // Output to console for testing
 	     result = new StreamResult(System.out);
+
 	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 	transformer.transform(source, result);
     }
-    
 
     private static class TextContainer
     {
@@ -95,10 +92,8 @@ class ContactsToXML
 	    return elem;
 	}
     }
-    
 	    
     public static void main(String[] args) {
-
 	ContactsService myService = new ContactsService("x");
 	Properties conf = get_properties("steve.conf");
 	
@@ -120,10 +115,13 @@ class ContactsToXML
 	catch (Exception e) {
 	    System.err.println( e.getMessage() );
 	}
-    
     }
 
-    public static Element printAllContacts(ContactsService myService, Document doc, Properties conf)
+    public static Element printAllContacts(
+					   ContactsService myService, 
+					   Document doc, 
+					   Properties conf
+					   )
 	throws ServiceException, IOException {
 	// Request the feed
 	URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full");
@@ -184,11 +182,9 @@ class ContactsToXML
 	    }
 	    
 	    if (entry.hasPhoneNumbers()) {
-
 		Element se = doc.createElement("section");
 		se.setAttribute("tag", "phone");
 		contactElement.appendChild(se);
-
 
 		for (PhoneNumber phone : entry.getPhoneNumbers()){
 		    Element phoneElem=new TextContainer(doc,se).
@@ -205,7 +201,6 @@ class ContactsToXML
 	    
 	    
 	    if (entry.hasEmailAddresses()) {
-
 		Element se = doc.createElement("section");
 		se.setAttribute("tag", "email");
 		contactElement.appendChild(se);
@@ -228,7 +223,6 @@ class ContactsToXML
 		}
 	    }
 	    
-
 
 	    for (PostalAddress pa : entry.getPostalAddresses() ) {
 		Element paElem = doc.createElement("address");
@@ -276,7 +270,6 @@ class ContactsToXML
 	    }
 
 	    if (entry.hasImAddresses()) {
-
 		Element se = doc.createElement("section");
 		se.setAttribute("tag", "im");
 		contactElement.appendChild(se);
@@ -299,7 +292,6 @@ class ContactsToXML
 	    }
 
 	    if (entry.hasWebsites()) {
-
 		Element se = doc.createElement("section");
 		se.setAttribute("tag", "website");
 		contactElement.appendChild(se);
@@ -323,13 +315,12 @@ class ContactsToXML
 		new TextContainer(doc,contactElement).
 		    node("birthday", entry.getBirthday().getWhen());
 	    
-
 	    for (GroupMembershipInfo group : entry.getGroupMembershipInfos()) {
-
 		Element groupElem = doc.createElement("group");
 		contactElement.appendChild(groupElem);
 		groupElem.setAttribute("href", group.getHref());
 	    }
+
 	    for (ExtendedProperty property : entry.getExtendedProperties()) {
 		if (property.getValue() != null)
 		    new TextContainer(doc,contactElement).
@@ -344,12 +335,11 @@ class ContactsToXML
 	    }
 	    Link photoLink = entry.getContactPhotoLink();
 	    String photoLinkHref = photoLink.getHref();
-	    //System.out.println("Photo Link: " + photoLinkHref);
 	    if (photoLink.getEtag() != null) {
-		//System.out.println("Contact Photo's ETag: " + photoLink.getEtag()); 
 		Element photoElem = doc.createElement("photo");
 		contactElement.appendChild(photoElem);
 		photoElem.setAttribute("href", photoLink.getHref());
+		photoElem.setAttribute("etag", photoLink.getEtag());
 		if (photo_download != null)
 		    photo_download.download(photoLink);
 		
@@ -383,14 +373,14 @@ class ContactsToXML
 
 	    groupElement.setAttribute("self",groupEntry.getSelfLink().getHref());
 	    
-	    if (!groupEntry.hasSystemGroup()) {
+	    if (groupEntry.hasSystemGroup()) {
+		groupElement.setAttribute("system",groupEntry.getSystemGroup().getId());
+	    } else {
 		// System groups do not have an edit link
 		groupElement.setAttribute("edit",groupEntry.getEditLink().getHref());
 		groupElement.setAttribute("etag",groupEntry.getEtag());
 	    }
-	    if (groupEntry.hasSystemGroup()) {
-		groupElement.setAttribute("system",groupEntry.getSystemGroup().getId());
-	    }
+		
 	}
 	return rootElement;
     }
