@@ -35,8 +35,11 @@ public class PhotoDownloader
 	if ( !do_replace_ && new File(image).exists())
 	    return true;
 	
+
+	GDataRequest request = null;
+	
 	try {
-	    GDataRequest request = service_.createLinkQueryRequest(photoLink);
+	    request = service_.createLinkQueryRequest(photoLink);
 	    try {
 		request.execute();
 		InputStream in = request.getResponseStream();

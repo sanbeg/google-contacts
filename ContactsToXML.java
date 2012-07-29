@@ -127,11 +127,10 @@ class ContactsToXML
 	URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full");
 
 	PhotoDownloader photo_download=null;
-	System.err.println(conf.getProperty("photo-download"));
 	
 	if ("yes".equals(conf.getProperty("photo-download"))){
 	    photo_download = new PhotoDownloader(myService,conf);
-	    System.err.println("downloading photos");
+	    System.err.println("Downloading photos.");
 	}
 	
 	Query myQuery = new Query(feedUrl);
