@@ -74,16 +74,18 @@ public class Scan
 		}
 		
 		
-		for (Entry ent : list ) {
-		    System.out.println(ent);
-		}
-		
-
 	    }
+	    
 	    
 	    if (reader != null)
 		reader.close();
+
+	    for (Entry ent : list ) {
+		System.out.println(ent);
+	    }
+
 	}
+	
 	catch (Exception e) {
 	    System.err.println( e.getMessage() );
 	}
