@@ -15,17 +15,26 @@ public class Scan
 	public String name=null;
 	public String first_name="";
 	public String last_name="";
-	public String picture="";
+	public String picture=null;
 
 	public String toString() 
 	{
 	    //return username;
 	    String rv = "";
-	    rv += username + "\t" + uid + "\n";
+	    if (username != null)
+		rv += username + "\t" + uid + "\n";
 	    rv += "  " + first_name + " " + last_name + " (" + name + ")\n";
-	    rv += "  " + picture + "\n";
+	    if (picture != null)
+		rv += "  " + picture + "\n";
 	    
 	    return rv;
+	}
+	
+	public bool matches(final Entry other) 
+	{
+	    if (name == null) return false;
+	    if (name.equals(other.name)) return true;
+	    return false;
 	}
 	
 
@@ -111,6 +120,7 @@ public class Scan
 	    }
 	}
 	
+	//TODO - check for dup name
 	if (other_list != null) {
 	    for (Entry fb_ent : list) {
 		if (fb_ent.name == null) continue;
@@ -133,7 +143,7 @@ public class Scan
 			    System.out.println(g_ent.first_name + " - " + g_ent.last_name);
 			}
 
-			if ("".equals(g_ent.picture))
+			if (g_ent.picture == null)
 			    System.out.println("  need pic");
 			
 
