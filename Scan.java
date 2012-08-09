@@ -5,42 +5,11 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import my.Entry;
+
 public class Scan 
 {
 
-    public static class Entry 
-    {
-	public long uid=0;
-	public String username="";
-	public String name=null;
-	public String first_name="";
-	public String last_name="";
-	public String picture=null;
-
-	public String toString() 
-	{
-	    //return username;
-	    String rv = "";
-	    if (username != null)
-		rv += username + "\t" + uid + "\n";
-	    rv += "  " + first_name + " " + last_name + " (" + name + ")\n";
-	    if (picture != null)
-		rv += "  " + picture + "\n";
-	    
-	    return rv;
-	}
-	
-	public bool matches(final Entry other) 
-	{
-	    if (name == null) return false;
-	    if (name.equals(other.name)) return true;
-	    return false;
-	}
-	
-
-    };
-    
-    
     private static ArrayList<Entry> scan_file(String file)
 	throws java.io.IOException, java.io.FileNotFoundException
     {
@@ -71,7 +40,7 @@ public class Scan
 		    //System.err.println("kv = " + key + " = " + val);
 		    
 		    if(key.equals("uid"))
-			cur.uid = Long.parseLong(val);
+			cur.fb_uid = Long.parseLong(val);
 		    else if (key.equals("name"))
 			cur.name = val;
 		    else if (key.equals("first_name"))
@@ -79,11 +48,13 @@ public class Scan
 		    else if (key.equals("last_name"))
 			cur.last_name = val;
 		    else if (key.equals("username"))
-			cur.username = val;
+			cur.fb_username = val;
 		    else if (key.equals("pic_big"))
 			cur.picture = val;
 		    //System.err.println("EOL");
-		    
+		    //add some fake google entries
+		    else if (key.equals("g_id"))
+			cur.g_id = val.substring(val.lastIndexOf("/")+1);
 		}
 		
 		
@@ -124,9 +95,23 @@ public class Scan
 	if (other_list != null) {
 	    for (Entry fb_ent : list) {
 		if (fb_ent.name == null) continue;
+		boolean have_match = false;
+		
+		//first check profile matches
+		for (Entry g_ent : other_list) {
+		    if (fb_ent.matches_profile(g_ent)){
+			have_match=true;
+			break;
+		    }
+		}
+		if (have_match)
+		    continue;
+		
 		for (Entry g_ent : other_list) {
 		    if (g_ent.name == null) continue;
-		    if (g_ent.name.equals(fb_ent.name)) {
+		    //if (g_ent.name.equals(fb_ent.name)) {
+		    if (g_ent.matches_name(fb_ent)){
+			
 			//linkedin may have first last (LinkedIn...)
 			//probably nothing like that in fb friends, though
 			System.out.println(fb_ent.name);
@@ -135,16 +120,18 @@ public class Scan
 			 *gmail may have combined them, so copy fb names
 			 * to gmail.
 			 */
-			if (fb_ent.first_name.equals(g_ent.first_name) &&
-			    fb_ent.last_name.equals(g_ent.last_name))
-			    //System.out.println("sn:"+fb_ent.name);
-			    ;
-			else {
-			    System.out.println(g_ent.first_name + " - " + g_ent.last_name);
+			if (fb_ent.name.equals(g_ent.last_name)) {
+			    System.out.println
+				("   " +
+				 g_ent.first_name + "->" + fb_ent.first_name +
+				 " ; " +
+				 g_ent.last_name + "->" + fb_ent.last_name
+				 );
 			}
-
+			
+			    
 			if (g_ent.picture == null)
-			    System.out.println("  need pic");
+			    System.out.println("  need pic: " + fb_ent.picture);
 			
 
 		    }

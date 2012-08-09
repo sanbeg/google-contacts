@@ -14,7 +14,7 @@
 </xsl:template>
 
 <xsl:template match="contact">
-  <xsl:text>0	fake	thing</xsl:text>
+  <xsl:text>0	g_id	</xsl:text><xsl:value-of select="@id"/>
   <xsl:apply-templates/>
 </xsl:template>
 
