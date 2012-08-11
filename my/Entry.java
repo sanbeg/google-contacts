@@ -55,27 +55,4 @@ public class Entry
 	return false;
     }
     
-
-    public static Entry make_merge (final Entry fb_ent, final Entry g_ent) 
-    {
-	Entry rv = new Entry();
-	
-	rv.g_id = g_ent.g_id;
-	
-	/*
-	 *gmail may have combined them, so copy fb names
-	 * to gmail.
-	 */
-	if (fb_ent.name.equals(g_ent.last_name)) {
-	    rv.first_name = fb_ent.first_name;
-	    rv.last_name = fb_ent.last_name;
-	}
-	if (g_ent.picture == null)
-	    rv.picture = fb_ent.picture;
-	
-	return rv;
-    }
-    
-    
-
 };

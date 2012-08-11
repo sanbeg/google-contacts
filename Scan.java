@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import my.Entry;
+import my.MergeEntries;
 
 public class Scan 
 {
@@ -116,22 +117,18 @@ public class Scan
 			//probably nothing like that in fb friends, though
 			System.out.println(fb_ent.name);
 		    
-			/*
-			 *gmail may have combined them, so copy fb names
-			 * to gmail.
-			 */
-			if (fb_ent.name.equals(g_ent.last_name)) {
+			Entry merged = MergeEntries.make_entry(fb_ent,g_ent);
+			if (! merged.last_name.equals("")) {
 			    System.out.println
 				("   " +
-				 g_ent.first_name + "->" + fb_ent.first_name +
+				 g_ent.first_name + "->" + merged.first_name +
 				 " ; " +
-				 g_ent.last_name + "->" + fb_ent.last_name
+				 g_ent.last_name + "->" + merged.last_name
 				 );
 			}
 			
-			    
-			if (g_ent.picture == null)
-			    System.out.println("  need pic: " + fb_ent.picture);
+			if (merged.picture != null)
+			    System.out.println("  need pic: " + merged.picture);
 			
 
 		    }
