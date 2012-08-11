@@ -7,11 +7,13 @@ import java.util.regex.Pattern;
 
 import my.Entry;
 import my.MergeEntries;
+import my.GcXmlParser;
 
 public class Scan 
 {
 
     private static ArrayList<Entry> scan_file(String file)
+
 	throws java.io.IOException, java.io.FileNotFoundException
     {
 	BufferedReader reader = null;
@@ -57,10 +59,7 @@ public class Scan
 		    else if (key.equals("g_id"))
 			cur.g_id = val.substring(val.lastIndexOf("/")+1);
 		}
-		
-		
 	    }
-	    
 	}
 	finally {
 	    if (reader != null)
@@ -82,7 +81,14 @@ public class Scan
 	    }
 	    
 	    if (args.length > 1) {
-		other_list = scan_file(args[1]);
+		String of = args[1];
+		
+		if (of.matches(".*.xml"))
+		    other_list = GcXmlParser.scan_file(args[1]);
+		else
+		    other_list = scan_file(args[1]);
+		System.out.println("Found " + other_list.size()+ " gc entries");
+		
 		if ( other_list.get(0).g_id == null ) {
 		    System.err.println("Entry is missing Google ID");
 		    System.exit(1);

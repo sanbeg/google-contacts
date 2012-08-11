@@ -31,7 +31,7 @@ public class MergeEntries
 	    rv.last_name = fb.last_name;
 	}
 	if (gc.picture == null)
-	    gc.picture = fb.picture;
+	    rv.picture = fb.picture;
     }
     
 }
