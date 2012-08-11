@@ -76,9 +76,18 @@ public class Scan
 	ArrayList<Entry> list = null, other_list=null;
 	try {
 	    list = scan_file(args[0]);
-	    if (args.length > 1)
-		other_list = scan_file(args[1]);
+	    if ( ! list.get(0).has_fb_profile() ) {
+		System.err.println("Entry is missing Facebook UID");
+		System.exit(1);
+	    }
 	    
+	    if (args.length > 1) {
+		other_list = scan_file(args[1]);
+		if ( other_list.get(0).g_id == null ) {
+		    System.err.println("Entry is missing Google ID");
+		    System.exit(1);
+		}
+	    }
 	}
 	
 	catch (Exception e) {
@@ -129,13 +138,9 @@ public class Scan
 			
 			if (merged.picture != null)
 			    System.out.println("  need pic: " + merged.picture);
-			
-
 		    }
-		    
 		}
 	    }
 	}
-	
     }
 }
