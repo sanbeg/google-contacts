@@ -1,0 +1,10 @@
+<project default="build">
+
+  <target name="build">
+    <javac srcdir="." classpath=".:../gdata/java/lib/*" includes="Scan.java" />
+  </target>
+
+  <target name="scan">
+    <java classname="Scan"  classpath=".:../gdata/java/lib/*"/>
+  </target>
+</project>
