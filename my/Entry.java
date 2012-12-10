@@ -1,6 +1,8 @@
 package my;
 
-public class Entry 
+import my.EntryIF;
+
+public class Entry implements EntryIF
 {
     public long fb_uid=0;
     public String fb_username="";
@@ -42,17 +44,50 @@ public class Entry
 	return fb_uid != 0;
     }
     
-
-    public boolean matches_name(final Entry other) 
+    public String name() 
+    {
+	return name;
+    }
+    public String first_name() 
+    {
+	return first_name;
+    }
+    public String last_name() 
+    {
+	return last_name;
+    }
+    
+    public void set_first_name(String name) 
+    {
+	first_name = name;
+    }
+    public void set_last_name(String name) 
+    {
+	last_name = name;
+    }
+    
+    public boolean matches_name(final EntryIF other) 
     {
 	if (name == null) return false;
-	if (name.equals(other.name)) return true;
+	if (name.equals(other.name())) return true;
 	return false;
     }
 
-    public boolean matches_profile( final Entry other ) 
+    public boolean matches_profile( final EntryIF other ) 
     {
 	return false;
+    }
+    public boolean has_picture() 
+    {
+	return picture != null;
+    }
+    public String picture() 
+    {
+	return picture;
+    }
+    public void set_picture(String pic)
+    {
+	picture=pic;
     }
     
 };
