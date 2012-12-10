@@ -35,39 +35,36 @@ public class PhotoDownloader
 	if ( !do_replace_ && new File(image).exists())
 	    return true;
 	
-
 	GDataRequest request = null;
 	
 	try {
 	    request = service_.createLinkQueryRequest(photoLink);
+	    request.execute();
+	    InputStream in = request.getResponseStream();
+	    //InputStream in = service.getStreamFromLink(photoLink);
+	    FileOutputStream file = new FileOutputStream(image);
 	    try {
-		request.execute();
-		InputStream in = request.getResponseStream();
-		//InputStream in = service.getStreamFromLink(photoLink);
-		FileOutputStream file = new FileOutputStream(image);
-		try {
-		    for (;;) {
-			int n = in.read(buffer);
-			if (n < 0) break;
-			file.write(buffer, 0, n);
-		    }
-		    
-		    file.close();
+		for (;;) {
+		    int n = in.read(buffer);
+		    if (n < 0) break;
+		    file.write(buffer, 0, n);
 		}
-		catch (Exception e) {
-		    new File(image).delete();
-		    throw(e);
-		}
+		
+		file.close();
 	    }
-	    finally {
-		request.end();
+	    catch (Exception e) {
+		new File(image).delete();
+		throw(e);
 	    }
 	}
 	catch (Exception e) {
 	    System.err.println( "Image download failed: " + e.getMessage() );
 	    return false;
 	}
-	    
+	finally {
+	    request.end();
+	}
+    
 	return true;
     }
 }
