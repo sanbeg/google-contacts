@@ -75,7 +75,7 @@ public class Scan
 	ArrayList<Entry> list = null, other_list=null;
 
 	if (args.length == 0) {
-	    System.err.println("Usage: Scan FB.TXT [ GOOGLE.XML ]");
+	    System.err.println("Usage: Scan FB.TXT [ GOOGLE.XML|GOOGLE.TXT ]");
 	    System.exit(1);
 	}
 	
