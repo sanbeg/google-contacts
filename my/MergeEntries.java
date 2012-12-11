@@ -5,7 +5,7 @@ import my.Entry;
 public class MergeEntries 
 {
     
-    public static Entry make_entry (final Entry fb_ent, final Entry g_ent) 
+    public static Entry make_entry (final EntryIF fb_ent, final Entry g_ent) 
     {
 	Entry rv = new Entry();
 	
@@ -15,23 +15,23 @@ public class MergeEntries
     }
 
 
-    public static void merge_into (final Entry fb_ent, Entry g_ent) 
+    public static void merge_into (final EntryIF fb_ent, EntryIF g_ent) 
     {
 	three_way_merge(fb_ent,g_ent,g_ent);
     }
 
-    static void three_way_merge (final Entry fb, final Entry gc, Entry rv) 
+    static void three_way_merge (final EntryIF fb, final EntryIF gc, EntryIF rv) 
     {
 	/*
 	 *gmail may have combined them, so copy fb names
 	 * to gmail.
 	 */
-	if (fb.name.equals(gc.last_name)) {
-	    rv.first_name = fb.first_name;
-	    rv.last_name = fb.last_name;
+	if (fb.name().equals(gc.last_name())) {
+	    rv.set_first_name( fb.first_name() );
+	    rv.set_last_name( fb.last_name() );
 	}
-	if (gc.picture == null)
-	    rv.picture = fb.picture;
+	if (! gc.has_picture() )
+	    rv.set_picture(fb.picture());
     }
     
 }
