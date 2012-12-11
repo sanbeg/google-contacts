@@ -73,6 +73,13 @@ public class Scan
     public static void main(String [] args)
     {
 	ArrayList<Entry> list = null, other_list=null;
+
+	if (args.length == 0) {
+	    System.err.println("Usage: Scan FB.TXT [ GOOGLE.XML ]");
+	    System.exit(1);
+	}
+	
+
 	try {
 	    list = scan_file(args[0]);
 	    if ( ! list.get(0).has_fb_profile() ) {
