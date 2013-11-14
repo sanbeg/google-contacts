@@ -23,9 +23,8 @@ public class Scan
 	Pattern pattern = Pattern.compile("^([0-9]*)\\s+(\\w+)\\s+(.+)");
 	
 	try {
-	    reader = new BufferedReader(new FileReader(file));
-	    
 	    String s;
+	    reader = new BufferedReader(new FileReader(file));
 	    reader.readLine(); //first line is useless heading.
 	    
 	    while ((s=reader.readLine()) != null){
