@@ -1,10 +1,23 @@
 <project default="build">
 
-  <target name="build">
-    <javac srcdir="." classpath=".:../gdata/java/lib/*" includes="Scan.java" />
+  <property name="build.dir"   value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  
+  <path id="classpath">
+    <fileset dir="/home/steve/src/google-contact/gdata/java/lib" 
+	     includes="**/*.jar"/>
+  </path>
+  
+  <target name="clean">
+    <delete dir="build"/>
   </target>
-
+  
+  <target name="build">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="src" destdir="${classes.dir}" classpathref="classpath"/>
+  </target>
+  
   <target name="scan">
-    <java classname="Scan"  classpath=".:../gdata/java/lib/*"/>
+    <java classname="Scan"  classpath="${classes.dir}:../gdata/java/lib/*"/>
   </target>
 </project>
