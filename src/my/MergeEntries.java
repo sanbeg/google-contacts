@@ -34,7 +34,7 @@ public class MergeEntries
 	    rv.set_picture(fb.picture());
     }
     
-    public static String loose_name_match(EntryIF fb_ent, EntryIF g_ent) 
+    public static String loose_name_match(Entry fb_ent, Entry g_ent) 
     {
 
 	//exact match on first/last

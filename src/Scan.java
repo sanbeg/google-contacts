@@ -155,34 +155,12 @@ public class Scan
 			    System.out.println("  need pic: " + merged.picture);
 		    }
 		    //exact match on first/last
-		    else if (g_ent.first_name.equals(fb_ent.first_name) && g_ent.last_name.equals(fb_ent.last_name)) {
-			System.out.println("First/last match: " + g_ent.name + "=" + fb_ent.name);
-		    }
-		    //try splitting fb_ent.last, matching there
 
-		    //if no last name, try first only?
-		    else if (g_ent.last_name.equals("") && g_ent.first_name.equals(fb_ent.first_name)) {
-			System.out.println("First only match: " + g_ent.name + "=" + fb_ent.name);
+		    else {
+			String match_rule = MergeEntries.loose_name_match(fb_ent,g_ent);
+			if (match_rule != null)
+			    System.out.println(match_rule + " match: " + g_ent.name + "=" + fb_ent.name);
 		    }
-		    //also try split on "-"?
-		    else if (fb_ent.last_name.contains(" ") && fb_ent.first_name.equals(g_ent.first_name)) {
-			
-			String names[] = fb_ent.last_name.split(" ");
-			if (
-			    names[names.length-1].equals(g_ent.last_name)
-			    )			
-			    System.out.println("Split match: " + g_ent.name + "="+fb_ent.name);
-			else
-			    System.out.println("Split mismatch: " + g_ent.name + "="+fb_ent.name);
-
-		    }
-		    else if (g_ent.last_name.equals(fb_ent.last_name) && g_ent.first_name.charAt(0) == fb_ent.first_name.charAt(0)) {
-			System.out.println("Initial match: " +  g_ent.name + "=" + fb_ent.name);
-		    }
-		    else if (g_ent.first_name.equals(fb_ent.first_name)) {
-			//System.out.println("First match: " + g_ent.name + "=" + fb_ent.name);
-		    }
-		    
 
 		    
 		}
