@@ -20,4 +20,9 @@
   <target name="scan">
     <java classname="Scan"  classpath="${classes.dir}:../gdata/java/lib/*"/>
   </target>
+
+
+  <target name="get">
+    <java classname="ContactsToXML"  classpath="${classes.dir}:../gdata/java/lib/*"/>
+  </target>
 </project>
