@@ -38,7 +38,7 @@ public class GcXmlParser {
 	    else if (name.equals("family"))
 		ent.last_name = cn.getTextContent();
 	    else if (name.equals("photo"))
-		ent.picture = a.getNamedItem("href").toString();
+		ent.picture = a.getNamedItem("href").getNodeValue();
 	    
 	    else if (
 		     name.equals("email")
@@ -49,7 +49,7 @@ public class GcXmlParser {
 		    System.out.println("\t\tprimary");
 		Node rel = a.getNamedItem("rel");
 		if (rel != null) {
-		    String rel_s = rel.toString();
+		    String rel_s = rel.getNodeValue();
 		    System.out.println("\t\t" + 
 				       rel_s.substring(rel_s.indexOf('#')+1,rel_s.length()-1));
 		}
@@ -78,7 +78,7 @@ public class GcXmlParser {
 	    
 	    Node n = nl.item(i);
 	    NamedNodeMap a = n.getAttributes();
-	    e.g_id = a.getNamedItem("id").toString();
+	    e.g_id = a.getNamedItem("id").getNodeValue();
 	    print_node(e,n);
 	    list.add(e);
 	}

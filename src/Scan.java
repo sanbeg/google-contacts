@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileOutputStream;
+
 import java.util.ArrayList;
+import java.util.Properties;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -152,13 +155,71 @@ public class Scan
 			
 			if (merged.picture != null)
 			    System.out.println("  need pic: " + merged.picture);
+
+			Properties edit = new Properties();
+
+			//if ( ! merged.first_name.equals(g_ent.first_name) )
+			if ( ! "".equals(merged.first_name) )
+			    edit.setProperty("first-name", merged.first_name);
+			//if ( ! merged.last_name.equals(g_ent.last_name) )
+			if ( ! "".equals(merged.last_name) )
+			    edit.setProperty("last-name", merged.last_name);
+			    
+			if ( fb_ent.has_fb_profile() && ! g_ent.has_fb_profile() ) {
+			    edit.setProperty("facebook", fb_ent.fb_profile());
+			    //edit.setProperty("fb-uid", fb_ent.uid);
+			}
+			
+			if (edit.size() > 0 ) {
+			    
+			    edit.setProperty("edit", g_ent.g_id);
+			    //edit.setProperty("old_name", g_ent.name);
+			    try {
+				edit.store(
+					   new FileOutputStream("edit-" + fb_ent.last_name + ".txt"),
+					   "Edit for " + fb_ent.name()
+					   );
+			    }
+			    catch (Exception e) {
+				System.err.println( "Failed to write edit:" + e.getMessage());
+			    }
+			}
+			
+				   
+
 		    }
 		    //exact match on first/last
 
 		    else {
 			String match_rule = MergeEntries.loose_name_match(fb_ent,g_ent);
-			if (match_rule != null)
+			if (match_rule != null) {
+			    
 			    System.out.println(match_rule + " match: " + g_ent.name + "=" + fb_ent.name);
+			    Properties edit = new Properties();
+			    
+			    if ( ! fb_ent.first_name.equals( g_ent.first_name ) )
+				edit.setProperty( "first-name", fb_ent.first_name );
+			    if ( ! fb_ent.last_name.equals( g_ent.last_name ) )
+				edit.setProperty( "last-name", fb_ent.last_name );
+			    if ( ! fb_ent.fb_profile().equals( g_ent.fb_profile() ) )
+				edit.setProperty( "facebook", fb_ent.fb_profile() );
+			    
+
+			    if (edit.size() > 1 ) {
+				edit.setProperty("edit", g_ent.g_id);
+				try {
+				    edit.store(
+					       new FileOutputStream("edit-" + fb_ent.last_name + ".txt"),
+					       "Edit for " + fb_ent.name()
+					       );
+				}
+				catch (Exception e) {
+				    System.err.println( "Failed to write edit:" + e.getMessage());
+				}
+			    }
+			    
+			}
+
 		    }
 
 		    

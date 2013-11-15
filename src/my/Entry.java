@@ -12,6 +12,9 @@ public class Entry implements EntryIF
     public String picture=null;
     public String g_id=null;
     
+    //for google, just set profile directly
+    private String fb_profile=null;
+    
     public String toString() 
     {
 	//return username;
@@ -30,8 +33,11 @@ public class Entry implements EntryIF
     
     public String fb_profile() 
     {
+	if (fb_profile != null)
+	    return fb_profile;
+	
 	StringBuilder rv = new StringBuilder("http://www.facebook.com/");
-	if (fb_username != null)
+	if (fb_username != null && ! "".equals(fb_username) )
 	    rv.append(fb_username);
 	else if (fb_uid != 0) 
 	    rv.append(fb_uid);
@@ -41,12 +47,15 @@ public class Entry implements EntryIF
     }
     public boolean has_fb_profile() 
     {
-	return fb_uid != 0;
+	return (fb_profile != null) || (fb_uid != 0);
     }
     
     public String name() 
     {
-	return name;
+	if (name == null)
+	    return first_name + " " + last_name;
+	else
+	    return name;
     }
     public String first_name() 
     {

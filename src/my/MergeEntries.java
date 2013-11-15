@@ -32,6 +32,8 @@ public class MergeEntries
 	}
 	if (! gc.has_picture() )
 	    rv.set_picture(fb.picture());
+
+	
     }
     
     public static String loose_name_match(Entry fb_ent, Entry g_ent) 
@@ -64,7 +66,7 @@ public class MergeEntries
 	else if (g_ent.last_name.equals(fb_ent.last_name)
 		 &&
 		 g_ent.first_name.charAt(0) == fb_ent.first_name.charAt(0)) {
-	    return "Initial";
+	    //return "Initial";
 	}
 	else if (g_ent.first_name.equals(fb_ent.first_name)) {
 	    //System.out.println("First match: " + g_ent.name + "=" + fb_ent.name);

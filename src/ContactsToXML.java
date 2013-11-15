@@ -67,6 +67,7 @@ class ContactsToXML
 	     result = new StreamResult(System.out);
 
 	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 	transformer.transform(source, result);
     }
 
