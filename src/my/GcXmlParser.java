@@ -17,11 +17,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import my.Entry;
 
 public class GcXmlParser {
 
     public static void print_node(Entry ent, Node n){
+	Pattern facebook_re = Pattern.compile("http://www\\.facebook\\.com/");
+	
 	NodeList children = n.getChildNodes();
 	for (int i=0; i<children.getLength(); ++i){
 	    Node cn = children.item(i);
@@ -31,7 +36,7 @@ public class GcXmlParser {
 	    if (name.equals("fn"))
 		ent.name = cn.getTextContent();
 	    
-	    else if (name.equals("name")/*||name.equals("section")*/)
+	    else if (name.equals("name")||name.equals("section"))
 		print_node(ent, cn);
 	    else if (name.equals("given"))
 		ent.first_name=cn.getTextContent();
@@ -40,10 +45,21 @@ public class GcXmlParser {
 	    else if (name.equals("photo"))
 		ent.picture = a.getNamedItem("href").getNodeValue();
 	    
+	    else if (name.equals("website")) {
+		
+		String profile = a.getNamedItem("href").getNodeValue();
+		Matcher match = facebook_re.matcher(profile);
+		if (match.lookingAt())
+		    ent.fb_profile = profile;
+		
+	    }
+	    
 	    else if (
 		     name.equals("email")
 		     || name.equals("phone")
 		     ){
+		if (true) continue;
+		
 		System.out.println("\t"+name+"\t"+cn.getTextContent());				
 		if (a.getNamedItem("primary") != null)
 		    System.out.println("\t\tprimary");

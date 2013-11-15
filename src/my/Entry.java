@@ -13,7 +13,7 @@ public class Entry implements EntryIF
     public String g_id=null;
     
     //for google, just set profile directly
-    private String fb_profile=null;
+    public String fb_profile=null;
     
     public String toString() 
     {

@@ -201,15 +201,17 @@ public class Scan
 				edit.setProperty( "first-name", fb_ent.first_name );
 			    if ( ! fb_ent.last_name.equals( g_ent.last_name ) )
 				edit.setProperty( "last-name", fb_ent.last_name );
+			    if ( ! fb_ent.name.equals( g_ent.name ) )
+				edit.setProperty( "full-name", fb_ent.name );
 			    if ( ! fb_ent.fb_profile().equals( g_ent.fb_profile() ) )
 				edit.setProperty( "facebook", fb_ent.fb_profile() );
 			    
 
-			    if (edit.size() > 1 ) {
+			    if (edit.size() > 0 ) {
 				edit.setProperty("edit", g_ent.g_id);
 				try {
 				    edit.store(
-					       new FileOutputStream("edit-" + fb_ent.last_name + ".txt"),
+					       new FileOutputStream("edit-" + fb_ent.name.toLowerCase().replaceAll(" ", "-") + ".txt"),
 					       "Edit for " + fb_ent.name()
 					       );
 				}
