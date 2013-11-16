@@ -1,29 +1,23 @@
 package my;
 
-import my.EntryIF;
-
 public class Entry implements EntryIF
 {
-    public long fb_uid=0;
-    public String fb_username="";
     public String name=null;
     public String first_name="";
     public String last_name="";
     public String picture=null;
     public String g_id=null;
     
-    //for google, just set profile directly
-    public String fb_profile=null;
-    
     public String toString() 
     {
 	//return username;
 	String rv = "";
+	/*
 	if (fb_username != null)
 	    rv += fb_username + "  (" + fb_uid + ")\n";
 	if (g_id != null)
 	    rv += g_id + "\n";
-	
+	*/
 	rv += "  " + first_name + " " + last_name + " (" + name + ")\n";
 	if (picture != null)
 	    rv += "  " + picture + "\n";
@@ -33,21 +27,11 @@ public class Entry implements EntryIF
     
     public String fb_profile() 
     {
-	if (fb_profile != null)
-	    return fb_profile;
-	
-	StringBuilder rv = new StringBuilder("http://www.facebook.com/");
-	if (fb_username != null && ! "".equals(fb_username) )
-	    rv.append(fb_username);
-	else if (fb_uid != 0) 
-	    rv.append(fb_uid);
-	else
-	    return null;
-	return rv.toString();
+	return null;
     }
     public boolean has_fb_profile() 
     {
-	return (fb_profile != null) || (fb_uid != 0);
+	return false;
     }
     
     public String name() 

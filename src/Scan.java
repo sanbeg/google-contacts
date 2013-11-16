@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.FileOutputStream;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import java.util.regex.Matcher;
@@ -11,17 +12,19 @@ import java.util.regex.Pattern;
 import my.Entry;
 import my.MergeEntries;
 import my.GcXmlParser;
+import my.FbEntry;
+import my.GcEntry;
 
 public class Scan 
 {
 
-    private static ArrayList<Entry> scan_file(String file)
+    private static ArrayList<FbEntry> scan_file(String file)
 
 	throws java.io.IOException, java.io.FileNotFoundException
     {
 	BufferedReader reader = null;
-	ArrayList<Entry> list = new ArrayList<Entry>();
-	Entry cur = null;
+	ArrayList<FbEntry> list = new ArrayList<FbEntry>();
+	FbEntry cur = null;
 	
 	Pattern pattern = Pattern.compile("^([0-9]*)\\s+(\\w+)\\s+(.+)");
 	
@@ -36,7 +39,7 @@ public class Scan
 		    //System.err.println("got line");
 		    
 		    if (! matcher.group(1).equals("")){
-			cur = new Entry();
+			cur = new FbEntry();
 			list.add(cur);
 		    }
 
@@ -56,10 +59,11 @@ public class Scan
 			cur.fb_username = val;
 		    else if (key.equals("pic_big"))
 			cur.picture = val;
-		    //System.err.println("EOL");
 		    //add some fake google entries
+		    /*
 		    else if (key.equals("g_id"))
 			cur.g_id = val.substring(val.lastIndexOf("/")+1);
+		    */
 		}
 	    }
 	}
@@ -74,7 +78,8 @@ public class Scan
     
     public static void main(String [] args)
     {
-	ArrayList<Entry> list = null, other_list=null;
+	List<FbEntry> list = null;
+	List<GcEntry> other_list=null;
 
 	if (args.length == 0) {
 	    System.err.println("Usage: Scan FB.TXT [ GOOGLE.XML|GOOGLE.TXT ]");
@@ -95,7 +100,9 @@ public class Scan
 		if (of.matches(".*.xml"))
 		    other_list = GcXmlParser.scan_file(args[1]);
 		else
-		    other_list = scan_file(args[1]);
+		    //other_list = scan_file(args[1]);
+		    System.err.println("Google data must be xml");
+		
 		System.out.println("Found " + other_list.size()+ " gc entries");
 		
 		if ( other_list.get(0).g_id == null ) {
@@ -118,12 +125,12 @@ public class Scan
 	
 	//TODO - check for dup name
 	if (other_list != null) {
-	    for (Entry fb_ent : list) {
+	    for (FbEntry fb_ent : list) {
 		if (fb_ent.name == null) continue;
 		boolean have_match = false;
 		
 		//first check profile matches
-		for (Entry g_ent : other_list) {
+		for (GcEntry g_ent : other_list) {
 		    if (fb_ent.matches_profile(g_ent)){
 			have_match=true;
 			break;
@@ -134,7 +141,7 @@ public class Scan
 		    continue;
 		}
 		
-		for (Entry g_ent : other_list) {
+		for (GcEntry g_ent : other_list) {
 		    if (g_ent.name == null) continue;
 		    //if (g_ent.name.equals(fb_ent.name)) {
 		    if (g_ent.matches_name(fb_ent)){

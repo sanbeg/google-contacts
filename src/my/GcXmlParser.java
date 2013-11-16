@@ -1,6 +1,7 @@
 package my;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,11 +21,9 @@ import org.xml.sax.SAXException;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import my.Entry;
-
 public class GcXmlParser {
 
-    public static void print_node(Entry ent, Node n){
+    public static void print_node(GcEntry ent, Node n){
 	Pattern facebook_re = Pattern.compile("http://www\\.facebook\\.com/");
 	
 	NodeList children = n.getChildNodes();
@@ -74,7 +73,7 @@ public class GcXmlParser {
     }
     
     
-    public static ArrayList<Entry> scan_file(String file)
+    public static List<GcEntry> scan_file(String file)
 	throws java.io.IOException, 
 	       java.io.FileNotFoundException,
 	       ParserConfigurationException,
@@ -87,10 +86,10 @@ public class GcXmlParser {
 	Document doc = builder.parse(is);
 	
 	NodeList nl = doc.getElementsByTagName("contact");
-	ArrayList<Entry> list = new ArrayList<Entry>();
+	ArrayList<GcEntry> list = new ArrayList<GcEntry>();
 	
 	for (int i=0; i<nl.getLength(); ++i) {
-	    Entry e = new Entry();
+	    GcEntry e = new GcEntry();
 	    
 	    Node n = nl.item(i);
 	    NamedNodeMap a = n.getAttributes();
@@ -124,7 +123,4 @@ public class GcXmlParser {
 	
     }
 }
-
-
-
 

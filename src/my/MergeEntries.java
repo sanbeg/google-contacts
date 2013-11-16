@@ -5,7 +5,7 @@ import my.Entry;
 public class MergeEntries 
 {
     
-    public static Entry make_entry (final EntryIF fb_ent, final Entry g_ent) 
+    public static Entry make_entry (EntryIF fb_ent, Entry g_ent) 
     {
 	Entry rv = new Entry();
 	
@@ -15,12 +15,12 @@ public class MergeEntries
     }
 
 
-    public static void merge_into (final EntryIF fb_ent, EntryIF g_ent) 
+    public static void merge_into (EntryIF fb_ent, EntryIF g_ent) 
     {
 	three_way_merge(fb_ent,g_ent,g_ent);
     }
 
-    static void three_way_merge (final EntryIF fb, final EntryIF gc, EntryIF rv) 
+    private static void three_way_merge (EntryIF fb, EntryIF gc, EntryIF rv) 
     {
 	/*
 	 *gmail may have combined them, so copy fb names
@@ -36,7 +36,7 @@ public class MergeEntries
 	
     }
     
-    public static String loose_name_match(Entry fb_ent, Entry g_ent) 
+    public static String loose_name_match(FbEntry fb_ent, GcEntry g_ent) 
     {
 
 	//exact match on first/last
