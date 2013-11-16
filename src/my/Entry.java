@@ -1,6 +1,6 @@
 package my;
 
-public class Entry implements EntryIF
+public class Entry
 {
     public String name=null;
     public String first_name="";
@@ -59,14 +59,14 @@ public class Entry implements EntryIF
 	last_name = name;
     }
     
-    public boolean matches_name(final EntryIF other) 
+    public boolean matches_name(Entry other) 
     {
 	if (name == null) return false;
 	if (name.equals(other.name())) return true;
 	return false;
     }
 
-    public boolean matches_profile( final EntryIF other ) 
+    public boolean matches_profile( Entry other ) 
     {
 	return false;
     }

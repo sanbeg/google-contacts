@@ -1,11 +1,9 @@
 package my;
 
-import my.Entry;
-
 public class MergeEntries 
 {
     
-    public static Entry make_entry (EntryIF fb_ent, Entry g_ent) 
+    public static Entry make_entry (FbEntry fb_ent, GcEntry g_ent) 
     {
 	Entry rv = new Entry();
 	
@@ -15,12 +13,12 @@ public class MergeEntries
     }
 
 
-    public static void merge_into (EntryIF fb_ent, EntryIF g_ent) 
+    public static void merge_into (FbEntry fb_ent, GcEntry g_ent) 
     {
 	three_way_merge(fb_ent,g_ent,g_ent);
     }
 
-    private static void three_way_merge (EntryIF fb, EntryIF gc, EntryIF rv) 
+    private static void three_way_merge (FbEntry fb, GcEntry gc, Entry rv) 
     {
 	/*
 	 *gmail may have combined them, so copy fb names
