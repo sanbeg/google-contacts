@@ -15,9 +15,12 @@ public class Entry
 	/*
 	if (fb_username != null)
 	    rv += fb_username + "  (" + fb_uid + ")\n";
+	*/
+	if ( has_fb_profile() )
+	    rv += fb_profile();
+	
 	if (g_id != null)
 	    rv += g_id + "\n";
-	*/
 	rv += "  " + first_name + " " + last_name + " (" + name + ")\n";
 	if (picture != null)
 	    rv += "  " + picture + "\n";

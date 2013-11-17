@@ -15,7 +15,7 @@ import com.google.gdata.data.extensions.FullName;
 class Update 
 {
     
-    public static Properties get_properties(String filename) 
+    private static Properties getProperties(String filename) 
     {
 	Properties props = new Properties();
 	try {
@@ -30,9 +30,9 @@ class Update
 	return props;
     }
 
-    public static ContactsService get_service() throws Exception
+    private static ContactsService getService() throws Exception
     {
-	Properties conf = get_properties("steve.conf");
+	Properties conf = getProperties("steve.conf");
 	ContactsService myService = new ContactsService("x");
 	myService.setUserCredentials(conf.getProperty("gmail"), conf.getProperty("pass"));
 
@@ -43,7 +43,7 @@ class Update
     public static void main (String args[]) throws Exception
     {
        
-	ContactsService service = get_service();
+	ContactsService service = getService();
 	
 	for (String file : args) {
 	    try {

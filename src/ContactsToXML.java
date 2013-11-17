@@ -37,7 +37,7 @@ import my.PhotoDownloader;
 class ContactsToXML
 {
    
-    public static Properties get_properties(String filename) 
+    public static Properties getProperties(String filename) 
     {
 	Properties props = new Properties();
 	try {
@@ -96,7 +96,7 @@ class ContactsToXML
 	    
     public static void main(String[] args) {
 	ContactsService myService = new ContactsService("x");
-	Properties conf = get_properties("steve.conf");
+	Properties conf = getProperties("steve.conf");
 	
 	try {
 
