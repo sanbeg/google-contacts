@@ -18,7 +18,7 @@ import my.GcEntry;
 public class Scan 
 {
 
-    private static ArrayList<FbEntry> scan_file(String file)
+    private static ArrayList<FbEntry> scanFile(String file)
 
 	throws java.io.IOException, java.io.FileNotFoundException
     {
@@ -88,7 +88,7 @@ public class Scan
 	
 
 	try {
-	    list = scan_file(args[0]);
+	    list = scanFile(args[0]);
 	    if ( ! list.get(0).has_fb_profile() ) {
 		System.err.println("Entry is missing Facebook UID");
 		System.exit(1);
@@ -98,9 +98,9 @@ public class Scan
 		String of = args[1];
 		
 		if (of.matches(".*.xml"))
-		    other_list = GcXmlParser.scan_file(args[1]);
+		    other_list = GcXmlParser.scanFile(args[1]);
 		else
-		    //other_list = scan_file(args[1]);
+		    //other_list = scanFile(args[1]);
 		    System.err.println("Google data must be xml");
 		
 		System.out.println("Found " + other_list.size()+ " gc entries");

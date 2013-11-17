@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 
 public class GcXmlParser {
 
-    public static void print_node(GcEntry ent, Node n){
+    private static void printNode(GcEntry ent, Node n){
 	Pattern facebook_re = Pattern.compile("http://www\\.facebook\\.com/");
 	
 	NodeList children = n.getChildNodes();
@@ -36,7 +36,7 @@ public class GcXmlParser {
 		ent.name = cn.getTextContent();
 	    
 	    else if (name.equals("name")||name.equals("section"))
-		print_node(ent, cn);
+		printNode(ent, cn);
 	    else if (name.equals("given"))
 		ent.first_name=cn.getTextContent();
 	    else if (name.equals("family"))
@@ -73,7 +73,7 @@ public class GcXmlParser {
     }
     
     
-    public static List<GcEntry> scan_file(String file)
+    public static List<GcEntry> scanFile(String file)
 	throws java.io.IOException, 
 	       java.io.FileNotFoundException,
 	       ParserConfigurationException,
@@ -94,7 +94,7 @@ public class GcXmlParser {
 	    Node n = nl.item(i);
 	    NamedNodeMap a = n.getAttributes();
 	    e.g_id = a.getNamedItem("id").getNodeValue();
-	    print_node(e,n);
+	    printNode(e,n);
 	    list.add(e);
 	}
 
@@ -105,7 +105,7 @@ public class GcXmlParser {
 
     public static void main(String [] args){
 	try {
-	    scan_file(args[0]);
+	    scanFile(args[0]);
 	    
 	} catch (ParserConfigurationException e) {
 	// TODO Auto-generated catch block
