@@ -198,7 +198,7 @@ public class Scan
 		    //exact match on first/last
 
 		    else {
-			String match_rule = MergeEntries.loose_name_match(fb_ent,g_ent);
+			String match_rule = MergeEntries.looseNameMatch(fb_ent,g_ent);
 			if (match_rule != null) {
 			    
 			    System.out.println(match_rule + " match: " + g_ent.name + "=" + fb_ent.name);

@@ -34,7 +34,7 @@ public class MergeEntries
 	
     }
     
-    public static String loose_name_match(FbEntry fb_ent, GcEntry g_ent) 
+    public static String looseNameMatch(FbEntry fb_ent, GcEntry g_ent) 
     {
 
 	//exact match on first/last
