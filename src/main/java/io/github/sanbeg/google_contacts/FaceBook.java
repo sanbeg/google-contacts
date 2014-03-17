@@ -11,7 +11,17 @@ class FqlUser
     @Facebook String first_name;
     @Facebook String last_name;
     @Facebook String username;
-    @Facebook String big_pic;
+    @Facebook String pic_big;
+
+    /**Produce a String like the old fbcmd stuff */
+    public String toFbcmdString() 
+    {
+        return String.format("0\tuid\t%s\n",uid)
+            + String.format("\tname\t%s\n",name)
+            + String.format("\tfirst_name\t%s\n",first_name)
+            + String.format("\tlast_name\t%s\n",last_name)
+            + String.format("\tpic_big\t%s\n",pic_big);
+    }
 }
 
 
@@ -38,8 +48,9 @@ public class FaceBook
         
         java.util.List<FqlUser> users = facebookClient.executeFqlQuery(query, FqlUser.class);
 
+        System.out.println("index\tfield\tvalue\n");
         for ( FqlUser user : users ) {
-            System.out.println( user.username );
+            System.out.print( user.toFbcmdString() );
         }
         
     }
